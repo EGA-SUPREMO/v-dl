@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# Downloads videos in 720p, 480p, etc. if availible
+#  -o '%(title)s.%(ext)s'
+dv() {
+    if [ $# = '0' ]; then
+        cat <<HELP_USAGE
+Welcome to Yet Another Video Downloader!
+
+USAGE:
+    $0 <quality> <link> [localization] [extra]
+
+    quality        Max quality of the video, e.g. 240, 360, etc
+    link           Link of the video, the id or full name of the youtube video. see
+                      youtube-dl readme for more info:
+                      https://github.com/ytdl-org/youtube-dl
+    localization   Localization of the downloaded file, defaults to '~/Downloads'.
+
+    extra          It can be used with only one option per command:
+        wa             Downloads the video with the worst audio available
+        nv             No video, downloads only audio
+        na             No audio, downloads only video
+        sub            Downloads subtitles in english and spanish
+        mp4            Download video in MP4 format
+Current Aliases:
+    alias dv2="dv 240"
+    alias dv3="dv 360"
+    ...
+    alias dv10="dv 1080"
+
+Note:
+You cannot change the order of the arguments, because I'm lazy, but I accept PRs!
+https://github.com/EGA-SUPREMO/dotfiles
+HELP_USAGE
+    else # Dont know how to exit program without closing tab when using oh my zsh
+        cd ${3-~/Downloads} # Should the program go to the orginal dir after the download?
+
+        FORMAT="-f bestvideo[height<=${1}]+bestaudio/best=[height<=${1}]"
+        case $4 in
+            *"mp4"*)
+                FORMAT="bestvideo[ext=mp4][height<=${1}]+bestaudio[ext=m4a]/best=[ext=mp4][height<=${1}]"
+                ;;
+            *"wa"*)
+                if [[ $3 = '~m' ]]; then
+                    echo -n "are you sure you want to download a music with worstaudio? press Ctrl+C or wait 10 seconds" && sleep 10s
+                fi
+                FORMAT="-f bestvideo[height<=${1}]+worstaudio/best=[height<=${1}]"
+                ;;
+            *"sub"*)
+                youtube-dl --skip-download $2 --write-sub --sub-lang en,en-GB,en-IE,es --sub-format 'srt/best'
+                ;;
+            *"nv"*)
+                FORMAT="-f bestaudio"
+                ;;
+            *"na"*)
+                FORMAT="-f bestvideo[height<=${1}]"
+                ;;
+            *"th"*)
+                FORMAT=$FORMAT" --write-thumbnail --embed-thumbnail"
+                ;;
+                
+            *)
+                FORMAT="-f bestvideo[height<=${1}]+bestaudio/best=[height<=${1}]"
+                ;;
+        esac
+
+        yt-dlp -R 'infinite' $FORMAT $2
+    fi
+}
+
+dvasub() {
+    yt-dlp --skip-download $1 --write-auto-sub --sub-lang ${2-es} --sub-format 'srt/best'
+}
+dvsub() {
+    yt-dlp --skip-download $1 --write-sub --sub-lang ${2-'en,en-GB,en-IE,en-US,es-US,es,id'}
+    filed="`ls -rt | tail -n 1`"
+    ffmpeg -i "${filed%.*}.vtt" "${filed%.*}.srt" -n
+}
+
+alias dv2="dv 240"
+alias dv3="dv 360"
+alias dv4="dv 480"
+alias dv7="dv 720"
+alias dv10="dv 1080"
+
+# 'aliases' to download music without needing to tell the dir
+dv2m() { dv2 $1 ~/Music $2; }
+dv3m() { dv3 $1 ~/Music $2; }
+dv4m() { dv4 $1 ~/Music $2; }
+dv7m() { dv7 $1 ~/Music $2; }
+dv10m() { dv10 $1 ~/Music $2; }
+
+# 'aliases' to download videos without needing to tell the dir
+dv2v() { dv2 $1 ~/Videos $2; }
+dv3v() { dv3 $1 ~/Videos $2; }
+dv4v() { dv4 $1 ~/Videos $2; }
+dv7v() { dv7 $1 ~/Videos $2; }
+dv10v() { dv10 $1 ~/Videos $2; }
