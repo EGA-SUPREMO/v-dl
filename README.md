@@ -35,3 +35,5 @@ YAVD provides some convenient aliases:
 - Feel free to contribute by submitting pull requests on GitHub.
 
 ## License
+
+This project is licensed under the [GNU General Public License (GPL) version 3](LICENSE)
