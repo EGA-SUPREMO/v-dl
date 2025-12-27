@@ -35,6 +35,22 @@ HELP_USAGE
     else # Dont know how to exit program without closing tab when using oh my zsh
         cd ${3-~/Downloads} # Should the program go to the orginal dir after the download?
 
+        DL_OPTS=""
+
+        # --- CHECK FOR COOKIES ---
+        if [[ "$4" == *"-c"* ]]; then
+            DL_OPTS="$DL_OPTS --cookies ~/cookies.txt"
+        fi
+
+        # --- CHECK FOR TIMESTAMPS ---
+        # Checks for the pattern *number:number (e.g. *10:00)
+        # We extract the specific timestamp string from $4 to pass to yt-dlp
+        if [[ "$4" =~ \*[0-9]+:[0-9]+ ]]; then
+            # Extract the string matching the timestamp format (requires grep)
+            TIMESTAMP=$(echo "$4" | grep -o '\*[0-9:.-]*')
+            DL_OPTS="$DL_OPTS --download-sections $TIMESTAMP"
+        fi
+
         FORMAT="-f bestvideo[height<=${1}]+bestaudio/best=[height<=${1}]"
         case $4 in
             *"mp4"*)
@@ -47,7 +63,7 @@ HELP_USAGE
                 FORMAT="-f bestvideo[height<=${1}]+worstaudio/best=[height<=${1}]"
                 ;;
             *"sub"*)
-                youtube-dl --skip-download $2 --write-sub --sub-lang en,en-GB,en-IE,es --sub-format 'srt/best'
+                youtube-dl --skip-download $2 --write-sub --sub-lang en,en-GB,en-IE,es,id,id-orig --sub-format 'srt/best'
                 ;;
             *"nv"*)
                 FORMAT="-f bestaudio"
@@ -64,7 +80,7 @@ HELP_USAGE
                 ;;
         esac
 
-        yt-dlp -R 'infinite' $FORMAT $2
+        echo "yt-dlp -R 'infinite' $DL_OPTS $FORMAT $2"
     fi
 }
 
@@ -72,7 +88,7 @@ dvasub() {
     yt-dlp --skip-download $1 --write-auto-sub --sub-lang ${2-es} --sub-format 'srt/best'
 }
 dvsub() {
-    yt-dlp --skip-download $1 --write-sub --sub-lang ${2-'en,en-GB,en-IE,en-US,es-US,es,id'}
+    yt-dlp --skip-download $1 --write-sub --sub-lang ${2-'en,en-GB,en-IE,en-US,es-US,es,id,id-orig'}
     filed="`ls -rt | tail -n 1`"
     ffmpeg -i "${filed%.*}.vtt" "${filed%.*}.srt" -n
 }
