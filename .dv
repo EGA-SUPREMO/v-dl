@@ -7,12 +7,12 @@ dv() {
 Welcome to Yet Another Video Downloader!
 
 USAGE:
-    $0 <quality> <link> [localization] [extra]
+    $0 <quality> <link> [localization] [extra] [another extra but in quotes]
 
     quality        Max quality of the video, e.g. 240, 360, etc
     link           Link of the video, the id or full name of the youtube video. see
-                      youtube-dl readme for more info:
-                      https://github.com/ytdl-org/youtube-dl
+                      yt-dlp readme for more info:
+                      https://github.com/yt-dlp/yt-dlp/
     localization   Localization of the downloaded file, defaults to '~/Downloads'.
 
     extra          It can be used with only one option per command:
@@ -21,6 +21,10 @@ USAGE:
         na             No audio, downloads only video
         sub            Downloads subtitles in english and spanish
         mp4            Download video in MP4 format
+    another extra
+    but in quotes   again only one per command
+        -c             will use --cookies ~/cookies.txt
+        *timestamp     will use the timestamp from yt-dlp, nochanges here
 Current Aliases:
     alias dv2="dv 240"
     alias dv3="dv 360"
