@@ -42,11 +42,9 @@ HELP_USAGE
             DL_OPTS="$DL_OPTS --cookies ~/cookies.txt"
         fi
 
-        # --- CHECK FOR TIMESTAMPS ---
-        # Checks for the pattern *number:number (e.g. *10:00)
-        # We extract the specific timestamp string from $4 to pass to yt-dlp
-        if [[ "$4" =~ \*[0-9]+:[0-9]+ ]]; then
-            # Extract the string matching the timestamp format (requires grep)
+        local timestamp_regex='\*[0-9]+:[0-9]+'
+        
+        if [[ "$4" =~ $timestamp_regex ]]; then
             TIMESTAMP=$(echo "$4" | grep -o '\*[0-9:.-]*')
             DL_OPTS="$DL_OPTS --download-sections $TIMESTAMP"
         fi
@@ -63,7 +61,7 @@ HELP_USAGE
                 FORMAT="-f bestvideo[height<=${1}]+worstaudio/best=[height<=${1}]"
                 ;;
             *"sub"*)
-                youtube-dl --skip-download $2 --write-sub --sub-lang en,en-GB,en-IE,es,id,id-orig --sub-format 'srt/best'
+                yt-dlp --skip-download $2 --write-sub --sub-lang en,en-GB,en-IE,es,id,id-orig --sub-format 'srt/best'
                 ;;
             *"nv"*)
                 FORMAT="-f bestaudio"
