@@ -1,7 +1,6 @@
 #!/bin/bash
 #
 # Downloads videos in 720p, 480p, etc. if availible
-#  -o '%(title)s.%(ext)s'
 dv() {
     if [ $# = '0' ]; then
         cat <<HELP_USAGE
@@ -33,9 +32,12 @@ You cannot change the order of the arguments, because I'm lazy, but I accept PRs
 https://github.com/EGA-SUPREMO/dotfiles
 HELP_USAGE
     else # Dont know how to exit program without closing tab when using oh my zsh
+        [[ -n $ZSH_VERSION ]] && setopt LOCAL_OPTIONS SH_WORD_SPLIT
+
         cd ${3-~/Downloads} # Should the program go to the orginal dir after the download?
 
         DL_OPTS=""
+        OUTPUT_TEMPLATE=""
 
         # --- CHECK FOR COOKIES ---
         if [[ "$4" == *"-c"* ]]; then
@@ -47,6 +49,8 @@ HELP_USAGE
         if [[ "$4" =~ $timestamp_regex ]]; then
             TIMESTAMP=$(echo "$4" | grep -o '\*[0-9:.-]*')
             DL_OPTS="$DL_OPTS --download-sections $TIMESTAMP"
+            local clean_ts=$(echo "$TIMESTAMP" | tr -d '*' | tr ':' '.')
+            OUTPUT_TEMPLATE="-o '%(title)s [${clean_ts}][%(id)s].%(ext)s'"
         fi
 
         FORMAT="-f bestvideo[height<=${1}]+bestaudio/best=[height<=${1}]"
@@ -77,8 +81,9 @@ HELP_USAGE
                 FORMAT="-f bestvideo[height<=${1}]+bestaudio/best=[height<=${1}]"
                 ;;
         esac
-
-        echo "yt-dlp -R 'infinite' $DL_OPTS $FORMAT $2"
+        
+        echo "yt-dlp -R 'infinite' $DL_OPTS "$OUTPUT_TEMPLATE" $FORMAT \"$2\""
+        yt-dlp -R 'infinite' $DL_OPTS "$OUTPUT_TEMPLATE" $FORMAT "$2"
     fi
 }
 
