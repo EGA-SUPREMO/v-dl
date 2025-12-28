@@ -30,6 +30,8 @@ Current Aliases:
     alias dv3="dv 360"
     ...
     alias dv10="dv 1080"
+    
+    dv10vc="dv 1080" but with cookies and saved on ~/Videos
 
 Note:
 You cannot change the order of the arguments, because I'm lazy, but I accept PRs!
@@ -119,3 +121,31 @@ dv3v() { dv3 $1 ~/Videos $2; }
 dv4v() { dv4 $1 ~/Videos $2; }
 dv7v() { dv7 $1 ~/Videos $2; }
 dv10v() { dv10 $1 ~/Videos $2; }
+
+# mooore aliases!
+_dv2vc_run() { dv2v "$1" "-c $2" }
+_dv3vc_run() { dv3v "$1" "-c $2" }
+_dv4vc_run() { dv4v "$1" "-c $2" }
+_dv7vc_run() { dv7v "$1" "-c $2" }
+_dv10vc_run() { dv10v "$1" "-c $2" }
+
+# 2. The alias that prevents wildcard expansion for zsh specifically
+alias dv2vc="noglob _dv2vc_run"
+alias dv3vc="noglob _dv3vc_run"
+alias dv4vc="noglob _dv4vc_run"
+alias dv7vc="noglob _dv7vc_run"
+alias dv10vc="noglob _dv10vc_run"
+
+# moooooooore aliases!
+_dv2mc_run() { dv2m "$1" "-c $2" }
+_dv3mc_run() { dv3m "$1" "-c $2" }
+_dv4mc_run() { dv4m "$1" "-c $2" }
+_dv7mc_run() { dv7m "$1" "-c $2" }
+_dv10mc_run() { dv10m "$1" "-c $2" }
+
+# 2. The alias that prevents wildcard expansion for zsh specifically
+alias dv2mc="noglob _dv2mc_run"
+alias dv3mc="noglob _dv3mc_run"
+alias dv4mc="noglob _dv4mc_run"
+alias dv7mc="noglob _dv7mc_run"
+alias dv10mc="noglob _dv10mc_run"
